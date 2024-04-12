@@ -54,6 +54,10 @@ class Empresa {
         $this->colVentas = $colVentasNew;
     }
 
+    public function setUnColVentas($indice, $unaVenta){
+        $this->colVentas[$indice] = $unaVenta;
+    }
+
     public function __toString(){
         $i=1;
         $string = "denominacion: " . $this->getDenominacion() . "\ndireccion: " . $this->getDireccion() . "\nclientes: ";
@@ -61,17 +65,57 @@ class Empresa {
             $string = $string . "cliente " . $i . ": " . $cliente . " \n";
             $i++;
         }
-        $string = $string . "\nmotos: ";
+        $string = $string . "motos: ";
+        $i=1;
         foreach($this->getColMotos() as $moto){
             $string = $string . "moto " . $i . ": " . $moto . " \n";
             $i++;
         }
-        $string = $string . "\nventas" ;
+        $i=1;
+        $string = $string . "ventas" ;
         foreach($this->getColVentas() as $venta){
             $string = $string . "venta " . $i . ": " . $venta . " \n";
             $i++;
         }
         return $string;
+    }
+
+    //retorna una moto vacia si no se encuentra para solo retornar un tipo de dato
+    public function retornarMoto($codigoMoto){
+        $i=0;
+        $moto = new Moto(-1, -1, -1, "error", -1, false);
+        while($i<count($this->getColMotos()) && $codigoMoto != $this->colMotos[$i]->getCodigo()){
+            $i++;
+        }
+        if($i!=count($this->getColMotos())){
+            $moto =  $this->colMotos[$i];
+        }
+        return $moto;
+    }
+
+    public function registrarVenta($colCodigosMoto, $objCliente){
+        $importeFinal = 0;
+        if(!($objCliente->getDadoBaja())){
+            $objVenta = new Venta(count($this->getColVentas()), "12/04/2024", $objCliente, [],0);
+            foreach($colCodigosMoto as $codigo){
+                if($this->retornarMoto($codigo)->getCodigo() != -1){
+                    $objVenta->incorporarMoto($this->retornarMoto($codigo));
+                    $this->setUnColVentas(count($this->getColVentas()), $objVenta);
+                }
+            }
+            $importeFinal = $objVenta->getPrecioFinal();
+        }
+        return $importeFinal;
+    }
+
+    public function retornarVentasXCLiente($tipo, $numDoc){
+        $colVentasCliente = [];
+        foreach($this->getColVentas() as $venta){
+            if($venta->getObjCliente()->getTipoDoc() == $tipo && $venta->getObjCliente()->getNumDoc() == $numDoc){
+                $colVentasCliente[count($colVentasCliente)] = $venta; 
+            }
+        }
+        return $colVentasCliente;
     }
 
 }

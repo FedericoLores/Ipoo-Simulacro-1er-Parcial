@@ -2,9 +2,17 @@
 class Venta{
     private $numero;    
     private $fecha;
-    private $cliente;
+    private $objCliente;
     private $colMotos;
     private $precioFinal;
+
+    public function __construct($numeroCnstr, $fechaCnstr, $objClienteCnstr, $colMotosCnstr, $precioFinalCnstr){
+        $this->numero = $numeroCnstr;
+        $this->fecha = $fechaCnstr;
+        $this->objCliente = $objClienteCnstr;
+        $this->colMotos = $colMotosCnstr;
+        $this->precioFinal = $precioFinalCnstr;
+    }
 
     public function getNumero(){
         return $this->numero;
@@ -14,8 +22,8 @@ class Venta{
         return $this->fecha;
     }
 
-    public function getCliente(){
-        return $this->cliente;
+    public function getObjCliente(){
+        return $this->objCliente;
     }
 
     public function getColMotos(){
@@ -34,8 +42,8 @@ class Venta{
         $this->fecha = $fechaNew;
     }
 
-    public function setCliente($clienteNew){
-        $this->cliente = $clienteNew;
+    public function setObjCliente($objClienteNew){
+        $this->objCliente = $objClienteNew;
     }
 
     public function setColMotos($colMotosNew){
@@ -48,7 +56,7 @@ class Venta{
 
     public function __toString(){
         $i=1;
-        $string = "\nnumero: " . $this->getNumero()."\nfecha: " . $this->getFecha()."\ndatos cliente: " . $this->getCliente()."\nmotos vendidas";
+        $string = "\nnumero: " . $this->getNumero()."\nfecha: " . $this->getFecha()."\ndatos cliente: " . $this->getObjCliente()."\nmotos vendidas";
         foreach($this->getColMotos() as $moto){
             $string = $string . "moto " . $i . ": " . $moto . " \n";
             $i++;
@@ -57,6 +65,15 @@ class Venta{
         return $string;
     }
 
+    public function incorporarMoto($objMoto){
+        $precioMoto = $objMoto->darPrecioVenta();
+        $coleccionMotos = $this->getColMotos();
+        if($precioMoto!= -1 && !($this->getObjCliente()->getDadoBaja())){
+            $coleccionMotos[count($coleccionMotos)] = $objMoto;
+            $this->setPrecioFinal($this->getPrecioFinal() + $precioMoto);
+            $this->setColMotos($coleccionMotos);
+        }
+    }
 
 }
 
